@@ -4,7 +4,7 @@ docker_compose("../openrelik-src/openrelik/docker-compose.yml")
 
 docker_build(
     # Image name - must match the image in the docker-compose file
-    "ghcr.io/openrelik/openrelik-worker-email-parser",
+    "ghcr.io/openrelik/openrelik-worker-email-parse",
     # Docker context
     ".",
     live_update=[

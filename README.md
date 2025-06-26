@@ -11,16 +11,16 @@ uniqueness and allow them to be correlated back to a message.
 Add the below configuration to the OpenRelik docker-compose.yml file.
 
 ```
-openrelik-worker-email-parser:
-    container_name: openrelik-worker-email-parser
-    image: ghcr.io/openrelik/openrelik-worker-email-parser:latest
+openrelik-worker-email-parse:
+    container_name: openrelik-worker-email-parse
+    image: ghcr.io/openrelik/openrelik-worker-email-parse:latest
     restart: always
     environment:
       - REDIS_URL=redis://openrelik-redis:6379
       - OPENRELIK_PYDEBUG=0
     volumes:
       - ./data:/usr/share/openrelik/data
-    command: "celery --app=src.app worker --task-events --concurrency=4 --loglevel=INFO -Q openrelik-worker-email-parser"
+    command: "celery --app=src.app worker --task-events --concurrency=4 --loglevel=INFO -Q openrelik-worker-email-parse"
     # ports:
       # - 5678:5678 # For debugging purposes.
 ```

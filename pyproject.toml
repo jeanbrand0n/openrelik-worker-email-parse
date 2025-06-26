@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "openrelik-worker-email-parsing"
+name = "openrelik-worker-email-parse"
 version = "0.1.0"
 description = "Parse email artifacts"
 authors = ["jeanbrand0n <benoitcraie@gmail.com>"]
