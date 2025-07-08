@@ -2,8 +2,8 @@
 publish: false
 
 # Worker Metadata. This section is required.
-display_name: User-friendly name of your worker
-description: Brief description of your workers purpose and functionality.
+display_name: Email Parser
+description: Email parsing agent to extract EML/MBOX artifacts
 
 # Optional: Third-Party Tools Used by the Worker.
 tools:

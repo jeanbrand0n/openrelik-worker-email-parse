@@ -10,12 +10,12 @@ from .app import celery
 
 logger = logging.getLogger(__name__)
 # Task name used to register and route the task to the correct queue.
-TASK_NAME = "openrelik-worker-email-parser.tasks.command"
+TASK_NAME = "openrelik-worker-email-parse.tasks.command"
 
 # Task metadata for registration in the core system.
 TASK_METADATA = {
-    "display_name": "openrelik-worker-email-parser",
-    "description": "OpenRelik Worker Email Parser",
+    "display_name": "EML/MBOX Parsing & Extraction",
+    "description": "EML/MBOX to CSV and attachment extraction",
     # Configuration that will be rendered as a web for in the UI, and
     # any data entered by the user will be available to the task function
     # when executing (task_config).
@@ -45,7 +45,7 @@ def command(
     Args:
         pipe_result: Base64-encoded result from the previous Celery task,
             if any.
-        input_files: List of input file dictionaries (unused if 
+        input_files: List of input file dictionaries (unused if
             pipe_result exists).
         output_path: Path to the output directory.
         workflow_id: ID of the workflow.
@@ -57,16 +57,29 @@ def command(
     input_files = get_input_files(pipe_result, input_files or [])
     output_files = []
     csv_headers = [
-        "Timestamp", "Timestamp_desc", "Message", "To", "From", "Bcc",
-        "Cc", "Subject", "Message-ID", "Date", "Content-Type",
-        "Attachments", "User-Agent", "Body"]
+        "Timestamp",
+        "Timestamp_desc",
+        "Message",
+        "To",
+        "From",
+        "Bcc",
+        "Cc",
+        "Subject",
+        "Message-ID",
+        "Date",
+        "Content-Type",
+        "Attachments",
+        "User-Agent",
+        "Body",
+    ]
 
     for input_file in input_files:
         input_extension = input_file.get("extension", "").lower()
 
         if input_extension not in email_parsing_utils.SUPPORTED_EXTENSIONS:
-            logging.info('Skipping file with unsupported extension:',
-                   input_file['extension'])
+            logging.info(
+                "Skipping file with unsupported extension:", input_file["extension"]
+            )
             continue
 
         output_file = create_output_file(
@@ -80,12 +93,14 @@ def command(
         if input_extension == "mbox":
             logging.info(f"Processing MBOX file: {input_file.get('path')}")
 
-            attachment_file_paths, mbox_dict = email_parsing_utils.parse_mbox_to_dict_and_extract_attachments(
-                file_path=input_file.get("path"),
-                output_path=output_path)
+            attachment_file_paths, mbox_dict = (
+                email_parsing_utils.parse_mbox_to_dict_and_extract_attachments(
+                    file_path=input_file.get("path"), output_path=output_path
+                )
+            )
             mbox_csv = email_parsing_utils.write_dict_to_csv(
-                message_dict=mbox_dict, headers=csv_headers,
-                output_file=output_file)
+                message_dict=mbox_dict, headers=csv_headers, output_file=output_file
+            )
             output_files.append(mbox_csv.to_dict())
 
             # Add attachments to output files
@@ -96,13 +111,14 @@ def command(
         if input_extension == "eml":
             logging.info(f"Processing EML file: {input_file.get('path')}")
 
-            attachment_file_paths, eml_dict = email_parsing_utils.parse_eml_to_dict_and_extract_attachments(
-                file_path=input_file.get("path"),
-                output_path=output_path)
+            attachment_file_paths, eml_dict = (
+                email_parsing_utils.parse_eml_to_dict_and_extract_attachments(
+                    file_path=input_file.get("path"), output_path=output_path
+                )
+            )
             eml_csv = email_parsing_utils.write_dict_to_csv(
-                message_dict=[eml_dict],
-                headers=csv_headers,
-                output_file=output_file)
+                message_dict=[eml_dict], headers=csv_headers, output_file=output_file
+            )
             output_files.append(eml_csv.to_dict())
 
             # Add attachments to output files

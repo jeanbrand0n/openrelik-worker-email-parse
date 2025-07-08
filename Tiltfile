@@ -1,5 +1,3 @@
-version_settings(constraint=">=0.22.1")
-
 docker_compose("../openrelik-src/openrelik/docker-compose.yml")
 
 docker_build(
