@@ -30,6 +30,12 @@ TASK_METADATA = {
     ],
 }
 
+COMPATIBLE_INPUTS = {
+    "data_types": [],
+    "mime_types": ["message/rfc822", "application/mbox"],
+    "filenames": ["*.eml", "*.mbox"],
+}
+
 
 @celery.task(bind=True, name=TASK_NAME, metadata=TASK_METADATA)
 def command(
@@ -54,8 +60,13 @@ def command(
     Returns:
         Base64-encoded dictionary containing task results.
     """
-    input_files = get_input_files(pipe_result, input_files or [])
+    input_files = get_input_files(
+        pipe_result, input_files or [], filter=COMPATIBLE_INPUTS
+    )
+    if not input_files:
+        raise RuntimeError("No compatible input files found.")
     output_files = []
+
     csv_headers = [
         "Timestamp",
         "Timestamp_desc",
@@ -75,12 +86,6 @@ def command(
 
     for input_file in input_files:
         input_extension = input_file.get("extension", "").lower()
-
-        if input_extension not in email_parsing_utils.SUPPORTED_EXTENSIONS:
-            logging.info(
-                "Skipping file with unsupported extension:", input_file["extension"]
-            )
-            continue
 
         output_file = create_output_file(
             output_path,
