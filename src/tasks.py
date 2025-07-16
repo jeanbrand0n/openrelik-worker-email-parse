@@ -10,7 +10,7 @@ from .app import celery
 
 logger = logging.getLogger(__name__)
 # Task name used to register and route the task to the correct queue.
-TASK_NAME = "openrelik-worker-email-parse.tasks.command"
+TASK_NAME = "eml-mbox-parse-worker"
 
 # Task metadata for registration in the core system.
 TASK_METADATA = {
