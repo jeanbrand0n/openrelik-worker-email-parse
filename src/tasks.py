@@ -10,7 +10,7 @@ from .app import celery
 
 logger = logging.getLogger(__name__)
 # Task name used to register and route the task to the correct queue.
-TASK_NAME = "eml-mbox-parse-worker"
+TASK_NAME = "openrelik-worker-email-parser.tasks.eml-mbox-parse-worker"
 
 # Task metadata for registration in the core system.
 TASK_METADATA = {
@@ -46,7 +46,7 @@ def command(
     workflow_id: str = None,
     task_config: dict = None,
 ) -> str:
-    """Run <REPLACE_WITH_COMMAND> on input files.
+    """Parse emails and attachments from input files.
 
     Args:
         pipe_result: Base64-encoded result from the previous Celery task,
